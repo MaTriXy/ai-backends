@@ -1,5 +1,11 @@
 # AI Backends
 
+> [!IMPORTANT]
+> This project will be archived and is no longer being maintained.
+> Feel free to fork this project in its current state and make it your own.
+> It will be replaced by [aibackends](https://github.com/donvito/aibackends), a new Python-based version designed to support more AI and ML pipelines.
+> I am excited to bring you a better development and deployment experience in the new version of aibackends using the latest open models.
+
 AIBackends is an API server that you can use to integrate AI into your applications. You can run it locally or self-host it.
 
 The project supports running open models locally with Ollama, LM Studio or LlamaCpp. It also supports LLM Gateway, OpenRouter, OpenAI, Anthropic, Google AI Studio, Baseten and ZAI providers.
@@ -10,28 +16,34 @@ The purpose of this project is to make common AI use cases easily accessible to 
 
 Since APIs are ready to use, you don't need to understand prompt engineering. Just prompt the API documentation and you are good to go. For those who want use with online app builders, you need to host AIBackends on your own server. I have tested in Railway and it is a good option.
 
-![AI Backends](images/run-aibackends.png)
+AI Backends
 
 ## Supported LLM Providers
 
 ### Local Providers
-| Provider | Description | Status |
-|----------|-------------|--------|
-| [Ollama](https://ollama.ai/) | Local models (self-hosted) |  Available |
-| [LM Studio](https://lmstudio.ai/) | Local models via OpenAI-compatible API (self-hosted) | Available |
-| [LlamaCpp](https://github.com/ggml-org/llama.cpp) | Local models via llama.cpp server (self-hosted) | Available |
+
+
+| Provider                                          | Description                                          | Status    |
+| ------------------------------------------------- | ---------------------------------------------------- | --------- |
+| [Ollama](https://ollama.ai/)                      | Local models (self-hosted)                           | Available |
+| [LM Studio](https://lmstudio.ai/)                 | Local models via OpenAI-compatible API (self-hosted) | Available |
+| [LlamaCpp](https://github.com/ggml-org/llama.cpp) | Local models via llama.cpp server (self-hosted)      | Available |
+
 
 ### Cloud Providers
-| Provider | Description | Status |
-|----------|-------------|--------|
-| [LLM Gateway](https://dub.sh/try-llmgw) | **Recommended** - Unified API for multiple LLM providers with free models | Available |
-| [OpenAI](https://openai.com/) | GPT models | Available |
-| [Anthropic](https://www.anthropic.com/) | Claude models | Available |
-| [OpenRouter](https://openrouter.ai/) | Open source and private models |  Available |
-| [Vercel AI Gateway](https://vercel.com/ai-gateway) | Open source and private models | Available |
-| [Google AI Studio](https://ai.google.dev/) | Gemini models via OpenAI-compatible interface | Available |
-| [Baseten](https://baseten.co/) | Cloud-hosted ML models with OpenAI-compatible API | Available |
-| [ZAI](https://z.ai/) | GLM models with vision/OCR capabilities | Available |
+
+
+| Provider                                           | Description                                                               | Status    |
+| -------------------------------------------------- | ------------------------------------------------------------------------- | --------- |
+| [LLM Gateway](https://dub.sh/try-llmgw)            | **Recommended** - Unified API for multiple LLM providers with free models | Available |
+| [OpenAI](https://openai.com/)                      | GPT models                                                                | Available |
+| [Anthropic](https://www.anthropic.com/)            | Claude models                                                             | Available |
+| [OpenRouter](https://openrouter.ai/)               | Open source and private models                                            | Available |
+| [Vercel AI Gateway](https://vercel.com/ai-gateway) | Open source and private models                                            | Available |
+| [Google AI Studio](https://ai.google.dev/)         | Gemini models via OpenAI-compatible interface                             | Available |
+| [Baseten](https://baseten.co/)                     | Cloud-hosted ML models with OpenAI-compatible API                         | Available |
+| [ZAI](https://z.ai/)                               | GLM models with vision/OCR capabilities                                   | Available |
+
 
 ## Set up environment variables
 
@@ -114,23 +126,30 @@ bun run build
 ## Run with Docker
 
 ### Using a single container (recommended)
+
 Right now this only works with OpenAI, Anthropic and OpenRouter since the docker container
+
 - Build the image:
+
 ```bash
 docker build -t ai-backends .
 ```
+
 - Run the container in the background (loads variables from your .env):
+
 ```bash
 docker run --env-file .env -p 3000:3000 ai-backends &
 ```
 
 Set this in your .env file if you're using for development with Ollama in your local machine.
+
 ```env
 NODE_ENV=development
 OLLAMA_BASE_URL=http://host.docker.internal:11434
 ```
 
 If deploying to production, set this in your .env file:
+
 ```env
 NODE_ENV=production
 DEFAULT_ACCESS_TOKEN=your-secret-api-key
@@ -139,24 +158,30 @@ ANTHROPIC_API_KEY=your-anthropic-api-key
 OPENROUTER_API_KEY=your-openrouter-api-key
 GOOGLE_AI_API_KEY=your-google-ai-api-key
 ```
+
 You need to configure at least one provider api key. Otherwise, the app will not start.
 
 ### Using Docker Compose
+
 This will run AI Backends API server and Ollama containers using Docker
+
 - Ensure you have a .env configured as described in "Set up environment variables" below. You must set DEFAULT_ACCESS_TOKEN and at least one provider credential (or enable a local provider such as Ollama).
 - Start all services:
+
 ```bash
 docker compose --env-file .env up -d --build
 ```
 
 ### Adding more models to Ollama container
+
 To add more models, you can edit the ollama service command in docker-compose.yml.
 
-
 For example, to add gemma3:4b, llama3.2:latest and llama3.2-vision:11b models, you can add the following to the ollama service command:
+
 ```yml
 command: -c "ollama serve & sleep 5 && ollama pull gemma3:270m && ollama pull gemma3:4b && ollama pull llama3.2:latest && ollama pull llama3.2-vision:11b && wait"
 ```
+
 You might need to adjust the timeout to give enough time for the models to be pulled.
 
 ```yml
@@ -165,65 +190,75 @@ You might need to adjust the timeout to give enough time for the models to be pu
 ```
 
   Useful commands:
-  - View logs: docker compose logs -f app
-  - Stop/remove: docker compose down
+
+- View logs: docker compose logs -f app
+- Stop/remove: docker compose down
 
 Notes
+
 - With Docker Compose, the app container can reach the Ollama service over the compose network (service name: ollama, port: 11434).
 - You can customize which models are pulled by editing the ollama service command in docker-compose.yml.
 
 ## Available APIs
 
 ### Text Processing
-| Endpoint | Description |
-|----------|-------------|
-| **/api/summarize** | Summarize long text content into concise, key points |
-| **/api/translate** | Translate text between different languages |
-| **/api/sentiment** | Analyze the emotional tone and sentiment of text |
-| **/api/keywords** | Extract important keywords and phrases from text |
-| **/api/email-reply** | Generate professional email responses based on context |
-| **/api/ask-text** | Ask questions about provided text and get intelligent answers |
-| **/api/highlighter** | Identify and highlight the most important information in text |
-| **/api/meeting-notes** | Transform meeting notes into structured summaries |
+
+
+| Endpoint                 | Description                                                             |
+| ------------------------ | ----------------------------------------------------------------------- |
+| **/api/summarize**       | Summarize long text content into concise, key points                    |
+| **/api/translate**       | Translate text between different languages                              |
+| **/api/sentiment**       | Analyze the emotional tone and sentiment of text                        |
+| **/api/keywords**        | Extract important keywords and phrases from text                        |
+| **/api/email-reply**     | Generate professional email responses based on context                  |
+| **/api/ask-text**        | Ask questions about provided text and get intelligent answers           |
+| **/api/highlighter**     | Identify and highlight the most important information in text           |
+| **/api/meeting-notes**   | Transform meeting notes into structured summaries                       |
 | **/api/project-planner** | Create detailed project plans with steps, timelines, and considerations |
-| **/api/rewrite** | Rewrite text with instructions (improve, shorten, fix grammar, tone) |
-| **/api/compose** | Compose short-form text given a topic |
-| **/api/pdf-summarizer** | Extract and summarize content from PDF documents with AI |
-| **/api/web-search** | Perform web searches and get AI-powered summaries of results |
+| **/api/rewrite**         | Rewrite text with instructions (improve, shorten, fix grammar, tone)    |
+| **/api/compose**         | Compose short-form text given a topic                                   |
+| **/api/pdf-summarizer**  | Extract and summarize content from PDF documents with AI                |
+| **/api/web-search**      | Perform web searches and get AI-powered summaries of results            |
+
 
 #### Text Processing Examples
 
 **Web Search** - Search the web and get AI-powered summaries:
 
-![Web Search Example](images/websearch-example.png)
+Web Search Example
 
 **Keywords Extraction** - Extract important keywords from text:
 
-![Keywords Example](images/keywords-example.png)
+Keywords Example
 
 **Sentiment Analysis** - Analyze emotional tone of text:
 
-![Sentiment Example](images/sentiment-example.png)
+Sentiment Example
 
 **Translation** - Translate text between languages:
 
-![Translate Example](images/translate-example.png)
+Translate Example
 
 ### Data Generation
-| Endpoint | Description |
-|----------|-------------|
+
+
+| Endpoint                | Description                                                                             |
+| ----------------------- | --------------------------------------------------------------------------------------- |
 | **/api/synthetic-data** | Generate realistic synthetic data based on prompts with optional JSON schema validation |
+
 
 **Synthetic Data Generation** - Generate realistic test data with custom schemas:
 
-![Synthetic Data Example](images/synthetic-data-example.png)
+Synthetic Data Example
 
 ### Image Processing
 
-| Endpoint | Description |
-|----------|-------------|
+
+| Endpoint        | Description                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------------- |
 | **/api/vision** | Analyze images with vision AI - ask questions, detect objects, get coordinates (ZAI GLM-4.6v) |
-| **/api/ocr** | Extract structured data from images using OCR with optional JSON schema output (ZAI GLM-4.6V) |
+| **/api/ocr**    | Extract structured data from images using OCR with optional JSON schema output (ZAI GLM-4.6V) |
+
 
 #### Vision AI Examples
 
@@ -231,11 +266,11 @@ AIBackends includes powerful vision capabilities powered by ZAI GLM-4.6v models.
 
 **Vision Q&A** - Ask questions about any image:
 
-![Vision Example](images/vision-example.png)
+Vision Example
 
 **OCR Extraction** - Extract structured data from documents, receipts, and invoices:
 
-![OCR Example](images/ocr-example.png)
+OCR Example
 
 More to come...check swagger docs for updated endpoints.
 
@@ -247,26 +282,24 @@ More to come...check swagger docs for updated endpoints.
 - Vercel AI SDK for AI integration
 - Docker for containerization
 
-
 ## Swagger Docs
 
 After running the project, you can access the swagger docs at:
 
 `http://localhost:3000/api/ui`
 
-![Swagger Documentation](images/swagger.png)
-
+Swagger Documentation
 
 ## Demos
 
 See examples how to use the APIs
 
-You can access demos at http://localhost:3000/api/demos
+You can access demos at [http://localhost:3000/api/demos](http://localhost:3000/api/demos)
 
-![Demos](images/aibackends-demo-page.png)
-
+Demos
 
 ## Provider and Model Selection
+
 You need to send the service and model name in the request body. See examples in the swagger docs.
 
 For example, to summarize text using Gemini model with Google as provider, you can use the following curl command:
@@ -308,12 +341,13 @@ curl --location 'http://localhost:3000/api/v1/summarize' \
 ```
 
 ## Available Tools
+
 - Home Page: `http://localhost:3000/`
 - Swagger Docs: `http://localhost:3000/api/ui`. You can test the API endpoints here.
 - JSON Editor: `http://localhost:3000/api/jsoneditor`
 - LLM-Friendly API Docs: `http://localhost:3000/api/llms.txt`. Copy the contents of this file and paste it into AI builder tools like Bolt.new, v0, Lovable, or AI coding assistants to help them understand and use the AIBackends API endpoints.
 
-![LLMs.txt Example](images/llms-txt-example.png)
+LLMs.txt Example
 
 ## Testing Examples
 
@@ -325,16 +359,16 @@ I am also open to sponsorship to support the development of the project.
 
 ## Vision
 
-![High level architecture](images/ai-backend-diagram.png)
-
+High level architecture
 
 ## Technical Architecture
 
-![Technical Architecture](images/aibackends-architecture.png)
+Technical Architecture
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=donvito/ai-backends&type=Date)](https://www.star-history.com/#donvito/ai-backends&Date)
+[Star History Chart](https://www.star-history.com/#donvito/ai-backends&Date)
 
 ## Supporting the project
+
 You can support my AI Backends project by becoming a Github Sponsor.
